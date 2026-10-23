@@ -40,5 +40,31 @@ class GPT(nn.Module):
             )
 
     def forward(self, idx, targets=None):
+        device = idx.device
+        _, T = idx.size() # B, T
+        pos = torch.arange(0, T, dtype=torch.long, device=device)
 
-        
+        tok_emb = self.transformer.wte(idx) # [B, T, d]
+
+        pos_emb = self.transformer.wpe(idx) # [T, d]
+
+        x = self.transformer.drop(tok_emb, pos_emb)
+
+        for block in self.transformer:
+            x = block(x)
+        x = self.transformer.ln_f(x) # final layer 
+
+        if targets is not None:
+            # compute CE loss for targeted prediction
+            logits = self.transformer.head(x) # predict
+            loss = F.cross_entropy(
+                logits.view(-1, logits.size(1)),
+                targets.view(-1),
+                ignore_index=1
+            )
+        else:
+            # perform inference by only looking at last token of each
+            logits = self.transformer.head(x[:, [-1], :]) 
+            loss = None
+
+        return logits, loss
