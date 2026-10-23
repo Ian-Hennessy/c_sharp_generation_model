@@ -31,8 +31,7 @@ class Block(nn.Module):
         self.ffnn == ffnn.FFNN(d, bias, dropout)
 
     def forward(self, x):
-        x = x + self.attn(self.ln(x))
-        x = x + self.ffnn(self.ln2(x))
+        y = x + self.ffnn.forward(self.ln(x) + self.attn(self.ln(x)))
 
         return x
 
