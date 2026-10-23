@@ -5,9 +5,6 @@ using feed_forward_nn.py, block.py, multi_headed_self_attention.py
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import block
-import feed_forward_nn as ffnn
-import multi_headed_self_attention as mhsa
 import residual_stream_block as rsb
 import copy
 

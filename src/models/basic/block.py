@@ -6,8 +6,8 @@ Class to combine feed_forward_nn.py and multi_headed_self_attention.py
 import torch 
 import torch.nn as nn
 import math
-import models.multi_headed_self_attention as mhsa
-import models.feed_forward_nn as ffnn
+import multi_headed_self_attention as mhsa
+import feed_forward_nn as ffnn
 
 class Block(nn.Module):
     def __init__(self, 
@@ -28,10 +28,10 @@ class Block(nn.Module):
         self.ln1 = nn.LayerNorm(d)
         self.attn = mhsa.causal_self_attention(d, H, T, bias, dropout)
         self.ln2 = nn.LayerNorm(d)
-        self.ffnn == ffnn.FFNN(d, bias, dropout)
+        self.ffnn = ffnn.FFNN(d, bias, dropout)
 
     def forward(self, x):
-        y = x + self.ffnn.forward(self.ln(x) + self.attn(self.ln(x)))
+        y = x + self.ffnn.forward(self.ln1(x) + self.attn(self.ln2(x)))
 
         return x
 
